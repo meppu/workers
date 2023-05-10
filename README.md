@@ -1,5 +1,19 @@
+<div align="center">
+
+![banner](.github/assets/banner.webp)
+
 # Workers
 
-All my cloudflare workers in a single repository.
+My Cloudflare Workers in a single repository.
 
-- `email/`: My email worker. Notifies me for incoming emails.
+</div>
+
+## Contributing
+
+You can always report bugs and request features via [GitHub Issues](/issues).
+
+For pull requests, make sure your code is well-formatted and at least can explain itself.
+
+## License
+
+All of the Cloudflare Workers in this repository are licensed under the MIT License.
