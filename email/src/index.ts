@@ -24,7 +24,7 @@ export default {
 };
 
 // Build discord embed from email message
-function embedBuilder(message: ForwardableEmailMessage): object {
+function embedBuilder({ from, to, rawSize }: ForwardableEmailMessage) {
   return {
     content: `Hey <@${USER_ID}>!`,
     embeds: [
@@ -34,17 +34,17 @@ function embedBuilder(message: ForwardableEmailMessage): object {
         fields: [
           {
             name: "From",
-            value: `\`${message.from}\``,
+            value: `\`${from}\``,
             inline: true,
           },
           {
             name: "To",
-            value: `\`${message.to}\``,
+            value: `\`${to}\``,
             inline: true,
           },
         ],
         footer: {
-          text: `Raw size is ${message.rawSize}`,
+          text: `Raw size is ${rawSize}`,
         },
       },
     ],
