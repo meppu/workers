@@ -30,5 +30,5 @@ wrangler secret put WEBHOOK_URL
 Run following command to publish it:
 
 ```
-wrangler publish ./src/index.ts
+wrangler publish
 ```
