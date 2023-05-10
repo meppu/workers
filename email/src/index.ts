@@ -8,10 +8,14 @@ export interface Env {
 }
 
 export default {
-  async email(message: ForwardableEmailMessage, env: Env, _ctx: any) {
+  async email(
+    message: ForwardableEmailMessage,
+    { WEBHOOK_URL }: Env,
+    _ctx: any
+  ) {
     const embed = embedBuilder(message);
 
-    await fetch(env.WEBHOOK_URL, {
+    await fetch(WEBHOOK_URL, {
       method: "POST",
       body: JSON.stringify(embed),
       headers: {
