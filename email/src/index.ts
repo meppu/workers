@@ -1,56 +1,69 @@
 import { ForwardableEmailMessage } from "@cloudflare/workers-types";
 
 // Replace with your own ID
-const USER_ID: string = "1013270483560579165";
+enum Platform {
+  Discord = "1013270483560579165",
+  Revolt = "01F6YN5JWMHJFKPDZVYB6434HX",
+}
 
 export interface Env {
-  WEBHOOK_URL: string;
+  DISCORD_WEBHOOK: string;
+  REVOLT_TOKEN: string;
+  REVOLT_CHANNEL: string;
 }
 
 export default {
-  async email(
-    message: ForwardableEmailMessage,
-    { WEBHOOK_URL }: Env,
-    _ctx: any
-  ) {
-    const embed = embedBuilder(message);
+  async email(message: ForwardableEmailMessage, env: Env, _ctx: any) {
+    const [discordMessage, revoltMessage] = [
+      messageBuilder(message, Platform.Discord),
+      messageBuilder(message, Platform.Revolt),
+    ];
 
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      body: JSON.stringify(embed),
-      headers: {
-        "content-type": "application/json;charset=UTF-8",
-      },
-    });
+    await messageSender(discordMessage, Platform.Discord, env);
+    await messageSender(revoltMessage, Platform.Revolt, env);
 
     await message.forward("meppu@proton.me");
   },
 };
 
-// Build discord embed from email message
-function embedBuilder({ from, to, rawSize }: ForwardableEmailMessage) {
-  return {
-    content: `Hey <@${USER_ID}>!`,
-    embeds: [
-      {
-        title: "Received An Email",
-        color: 0xffd6fe,
-        fields: [
-          {
-            name: "From",
-            value: `\`${from}\``,
-            inline: true,
-          },
-          {
-            name: "To",
-            value: `\`${to}\``,
-            inline: true,
-          },
-        ],
-        footer: {
-          text: `Raw size is ${rawSize}`,
+// Build message from email message for a platform
+function messageBuilder(
+  { from, to }: ForwardableEmailMessage,
+  platform: Platform
+): string {
+  return `Hey <@${platform}>! Got an email from \`${from}\` to \`${to}\` :3`;
+}
+
+// Send notification for a platform
+async function messageSender(
+  content: string,
+  platform: Platform,
+  { DISCORD_WEBHOOK, REVOLT_TOKEN, REVOLT_CHANNEL }: Env
+) {
+  switch (platform) {
+    case Platform.Discord: {
+      await fetch(DISCORD_WEBHOOK, {
+        method: "POST",
+        body: JSON.stringify({ content }),
+        headers: {
+          "content-type": "application/json;charset=UTF-8",
         },
-      },
-    ],
-  };
+      });
+      break;
+    }
+    case Platform.Revolt: {
+      await fetch(
+        `https://api.revolt.chat/channels/${REVOLT_CHANNEL}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify({ content }),
+          headers: {
+            "content-type": "application/json;charset=UTF-8",
+            "x-bot-token": REVOLT_TOKEN,
+          },
+        }
+      );
+      break;
+    }
+  }
 }

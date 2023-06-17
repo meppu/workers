@@ -19,10 +19,12 @@ cd workers/email
 
 ### Set Webhook URL
 
-Run following command to set `WEBHOOK_URL` secret:
+Run following commands to set `DISCORD_WEBHOOK`, `REVOLT_CHANNEL` and `REVOLT_TOKEN` secret:
 
-```
-wrangler secret put WEBHOOK_URL
+```bash
+$ wrangler secret put DISCORD_WEBHOOK
+$ wrangler secret put REVOLT_CHANNEL
+$ wrangler secret put REVOLT_TOKEN
 ```
 
 ### Publish
